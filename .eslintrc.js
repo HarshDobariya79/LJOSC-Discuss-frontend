@@ -18,6 +18,8 @@ module.exports = {
       'import/no-named-as-default-member': 'off',
       'jsx-a11y/label-has-associated-control': 'off',
       'no-console': 'off',
+      'react/function-component-definition': 'off',
+      'no-underscore-dangle': 'off',
     },
     env: {
       browser: true,
