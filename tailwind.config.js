@@ -4,7 +4,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "oceanic-blue": "#1579BE",
+        keppel: "#01b39e",
+        "keppel-dark": "#03AC98",
+        azure: "#f2fefd",
+        "outer-space": "#3d494e",
+        "outer-space-light": "#3e4d50",
       },
     },
   },
