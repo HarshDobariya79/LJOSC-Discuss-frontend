@@ -110,7 +110,7 @@ const Login = () => {
             some large corporation that probably does not have your best
             interests at heart.&#10078;
           </span>
-          <div className="text-end">- Linus Torwald</div>
+          <div className="text-end">- Linus Torvalds</div>
         </div>
       </div>
       <div className="flex flex-col w-2/5 h-screen justify-center">
