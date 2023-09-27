@@ -28,7 +28,7 @@ protectedApi.interceptors.request.use(async (req) => {
     accessToken = localStorage.getItem("accessToken");
     req.headers.Authorization = `Bearer ${accessToken}`;
     if (!accessToken) {
-      return;
+      logout();
     }
     const user = jwtDecode(accessToken);
     const isAccessTokenExpired = dayjs.unix(user?.exp).diff(dayjs()) < 1;
@@ -48,11 +48,11 @@ protectedApi.interceptors.request.use(async (req) => {
       }
 
       const response = await api.post(`/auth/v1/refresh-token/`, {
-        refresh: refreshToken?.toString(),
+        refreshToken: refreshToken?.toString(),
       });
 
       if (response?.status === 200) {
-        accessToken = response?.data?.access;
+        accessToken = response?.data?.accessToken;
         localStorage.setItem("accessToken", accessToken);
         req.headers.Authorization = `Bearer ${accessToken}`; // eslint-disable-next-line
         return req;
