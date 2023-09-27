@@ -4,7 +4,7 @@ import { useProfile } from "../../hooks/useProfile";
 
 const PASSWORD_REGEX = /^[A-Za-z0-9!@#$%^&*-_,.]{8,}$/;
 const EMAIL_REGEX =
-  /^[A-Za-z0-9!#$%&'*+-/=?^_`{|}~]+@[A-Za-z]{2,}\.[A-Za-z]{2,}$/;
+  /^[A-Za-z0-9!#$%&'*+-/=?^_`{|}~]+@[A-Za-z.]{2,}\.[A-Za-z]{2,}$/;
 
 const Login = () => {
   const { setProfile } = useProfile();
@@ -233,6 +233,7 @@ const Login = () => {
                   payload.password === payload.confirmPassword) ||
                 (mode === "Login" &&
                   payload.email &&
+                  EMAIL_REGEX.test(payload.email) &&
                   payload.password &&
                   EMAIL_REGEX.test(payload.email))
               )
