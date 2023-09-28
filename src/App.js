@@ -12,6 +12,7 @@ import { ProfileProvider } from "./hooks/useProfile";
 import Main from "./pages/Main/Main";
 import Home from "./components/Home/Home";
 import Login from "./pages/Login/Login";
+import Thread from "./components/Thread/Thread";
 
 function App() {
   const { isLoggedIn } = useAuth();
@@ -24,6 +25,7 @@ function App() {
         >
           <Route path="/" element={<Main />}>
             <Route path="" element={<Home />} />
+            <Route path="/thread/:id" element={<Thread />} />
           </Route>
         </Route>
         <Route
