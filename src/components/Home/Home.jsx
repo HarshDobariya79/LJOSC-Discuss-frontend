@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+// eslint-disable-next-line no-unused-vars
 import MDEditor, { commands } from "@uiw/react-md-editor";
 import rehypeSanitize from "rehype-sanitize";
 import { protectedApi } from "../../services/api";
@@ -156,20 +157,21 @@ const Home = () => {
                 previewOptions={{
                   rehypePlugins: [[rehypeSanitize]],
                 }}
-                commands={[
-                  commands.bold,
-                  commands.italic,
-                  commands.strikethrough,
-                  commands.hr,
-                  commands.link,
-                  commands.quote,
-                  commands.code,
-                ]}
-                extraCommands={[
-                  commands.codeEdit,
-                  commands.codeLive,
-                  commands.codePreview,
-                ]}
+                // SOME OF THE COMMANDS OTHER THAN LISTED BELOW BREAKING IN DEVELOPMENT BUT RUNNING FINE IN PRODUCTION, HOWEVER WITH THESE COMMANDS SPECIFIED, PRODUCTION IS BREAKING
+                // commands={[
+                //   commands.bold,
+                //   commands.italic,
+                //   commands.strikethrough,
+                //   commands.hr,
+                //   commands.link,
+                //   commands.quote,
+                //   commands.code,
+                // ]}
+                // extraCommands={[
+                //   commands.codeEdit,
+                //   commands.codeLive,
+                //   commands.codePreview,
+                // ]}
               />
             </div>
             <button
