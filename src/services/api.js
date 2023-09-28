@@ -23,6 +23,7 @@ const protectedApi = axios.create({
   },
 });
 
+// eslint-disable-next-line consistent-return
 protectedApi.interceptors.request.use(async (req) => {
   try {
     accessToken = localStorage.getItem("accessToken");
