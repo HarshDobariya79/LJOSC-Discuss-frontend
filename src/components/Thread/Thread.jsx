@@ -107,7 +107,10 @@ const Thread = () => {
                     <div>Date: {thread.createDate}</div>
                     <div className="flex justify-center items-center space-x-2">
                       <button onClick={() => likeDislikeThread()}>
-                        <span>
+                        <span className="flex justify-center items-center space-x-2">
+                          <span className="text-lg text-outer-space">
+                            {thread?.likes}
+                          </span>
                           <svg
                             className={`w-6 h-6 ${
                               thread?.liked
