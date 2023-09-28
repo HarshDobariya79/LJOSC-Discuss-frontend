@@ -1,12 +1,23 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import MDEditor, { commands } from "@uiw/react-md-editor";
+import rehypeSanitize from "rehype-sanitize";
 import { protectedApi } from "../../services/api";
 
 const Home = () => {
   const [threads, setThreads] = useState();
+  const [newThread, setNewThread] = useState({});
+  const [create, setCreate] = useState(false);
+  const [filter, setFilter] = useState("all");
+  const navigate = useNavigate();
 
   useEffect(() => {
+    setNewThread({});
+  }, [create]);
+
+  const fetchThreads = () => {
     protectedApi
-      .get("/api/v1/thread")
+      .get(`/api/v1/thread?filter=${filter}`)
       .then((response) => {
         if (response.status === 200) {
           setThreads(response.data);
@@ -15,29 +26,69 @@ const Home = () => {
       .catch((err) => {
         console.error("Threads fetching failed! ", err);
       });
+  };
+
+  useEffect(() => {
+    fetchThreads();
+  }, [filter]);
+
+  useEffect(() => {
+    fetchThreads();
   }, []);
+
+  const createNewThread = () => {
+    protectedApi
+      .post("/api/v1/thread", {
+        title: newThread.title,
+        content: newThread.content,
+      })
+      .then((response) => {
+        if (response.status === 201) {
+          fetchThreads();
+          setCreate(false);
+        }
+      });
+  };
 
   return (
     <div>
       <div className="bg-keppel flex flex-col items-center justify-center p-16 space-y-9">
         <div className="text-[#FFFEFE] text-6xl font-medium">Hello. 👋</div>
         <div className="text-[#fcfaf7] text-3xl">
-          Welcome to the LJOSC community&apos;s discussion forum.
+          Welcome to the LJ Open-Source community&apos;s discussion forum.
         </div>
       </div>
       <div className="w-4/5 mx-auto h-full p-4 my-4 text-[#030509] flex justify-between items-center">
         <div className="flex font-normal text-lg">
-          <button className="px-3 py-2 mx-2 bg-keppel text-[#FFFEFE] hover:bg-keppel-dark hover:text-[#FFFEFE] transition">
+          <button
+            className={`px-3 py-2 mx-2 ${
+              filter === "all" ? "bg-keppel text-[#FFFEFE]" : ""
+            } hover:bg-keppel-dark hover:text-[#FFFEFE] transition`}
+            onClick={() => setFilter("all")}
+          >
             All Threads
           </button>
-          <button className="px-3 py-2 mx-2 hover:bg-keppel hover:text-[#FFFEFE] transition">
-            Latest
+          <button
+            className={`px-3 py-2 mx-2 ${
+              filter === "top" ? "bg-keppel text-[#FFFEFE]" : ""
+            } hover:bg-keppel hover:text-[#FFFEFE] transition`}
+            onClick={() => setFilter("top")}
+          >
+            Top
           </button>
-          <button className="px-3 py-2 mx-2 hover:bg-keppel hover:text-[#FFFEFE] transition">
+          <button
+            className={`px-3 py-2 mx-2 ${
+              filter === "unseen" ? "bg-keppel text-[#FFFEFE]" : ""
+            } hover:bg-keppel hover:text-[#FFFEFE] transition`}
+            onClick={() => setFilter("unseen")}
+          >
             Unseen
           </button>
         </div>
-        <button className="px-3 py-2 mx-2 bg-keppel hover:bg-keppel-dark text-white transition font-medium">
+        <button
+          className="px-3 py-2 mx-2 bg-keppel hover:bg-keppel-dark text-white transition font-medium"
+          onClick={() => setCreate(true)}
+        >
           New Thread
         </button>
       </div>
@@ -59,7 +110,7 @@ const Home = () => {
                   <tr
                     key={thread._id}
                     className="cursor-pointer hover:bg-[#f8f8f9] border-b-2"
-                    onClick={() => console.log("Hello world")}
+                    onClick={() => navigate(`/thread/${thread._id}`)}
                   >
                     <td>
                       <div className="flex flex-col space-y-2 p-3">
@@ -79,6 +130,79 @@ const Home = () => {
           </tbody>
         </table>
       </div>
+      {create ? (
+        <div className="fixed bottom-0 left-0 right-0 w-4/5 h-3/10 mx-auto bg-[#FFFEFE] shadow-2xl border-t-8 border-keppel">
+          <div className="w-4/5 mx-auto my-10">
+            <input
+              type="text"
+              name="title"
+              placeholder="Title"
+              className="border-2 w-1/2 p-1 border-[#d5dce2] focus:keppel focus:ring-0 focus:border-keppel block focus:ring-keppel focus-visible:outline-none"
+              value={newThread.title || ""}
+              onChange={(e) =>
+                setNewThread({ ...newThread, title: e.target.value })
+              }
+            />
+            <div data-color-mode="light" className="mx-auto m-5">
+              <MDEditor
+                value={newThread.content}
+                onChange={(val) => {
+                  console.log(val);
+                  setNewThread({
+                    ...newThread,
+                    content: val,
+                  });
+                }}
+                previewOptions={{
+                  rehypePlugins: [[rehypeSanitize]],
+                }}
+                commands={[
+                  commands.bold,
+                  commands.italic,
+                  commands.strikethrough,
+                  commands.hr,
+                  commands.link,
+                  commands.quote,
+                  commands.code,
+                ]}
+                extraCommands={[
+                  commands.codeEdit,
+                  commands.codeLive,
+                  commands.codePreview,
+                ]}
+              />
+            </div>
+            <button
+              className="p-1 px-4 text-white bg-keppel hover:bg-keppel-dark transition disabled:bg-slate-300"
+              disabled={!newThread.title || !newThread.content}
+              onClick={createNewThread}
+            >
+              Create
+            </button>
+          </div>
+          <button
+            className="absolute top-0 right-0 p-2 text-gray-700 hover:text-keppel-dark transition"
+            onClick={() => setCreate(false)}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+      ) : (
+        ""
+      )}
     </div>
   );
 };
