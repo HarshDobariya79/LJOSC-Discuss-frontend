@@ -6,10 +6,11 @@ import rehypeSanitize from "rehype-sanitize";
 import { protectedApi } from "../../services/api";
 
 const Home = () => {
-  const [threads, setThreads] = useState();
+  const [threads, setThreads] = useState([]);
   const [newThread, setNewThread] = useState({});
   const [create, setCreate] = useState(false);
   const [filter, setFilter] = useState("all");
+  const [topContributors, setTopContributors] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,9 +30,26 @@ const Home = () => {
       });
   };
 
+  const fetchTopContributors = () => {
+    protectedApi
+      .get("/api/v1/users/top")
+      .then((response) => {
+        if (response.status === 200) {
+          setTopContributors(response.data);
+        }
+      })
+      .catch((err) => {
+        console.error("fetch top contributors", err);
+      });
+  };
+
   useEffect(() => {
     fetchThreads();
   }, [filter]);
+
+  useEffect(() => {
+    fetchTopContributors();
+  }, []);
 
   useEffect(() => {
     fetchThreads();
@@ -94,7 +112,7 @@ const Home = () => {
         </button>
       </div>
 
-      <div className="w-4/5 mx-auto">
+      <div className="w-4/5 mx-auto flex justify-start items-start">
         <table className="w-2/3">
           <thead>
             <tr className="px-4 border-b-[3px]">
@@ -128,6 +146,47 @@ const Home = () => {
                   </tr>
                 ))
               : null}
+          </tbody>
+        </table>
+        <table className="mx-auto w-1/4">
+          <thead>
+            <tr className="px-4 border-b-[3px]">
+              <th colSpan="2" className="px-2">
+                Top Contributors
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {topContributors?.map((contributor) => (
+              <tr key={contributor?._id}>
+                <td className="flex justify-between items-center">
+                  <div className="flex justify-center items-center">
+                    <span className="aspect-square w-fit px-3 mx-2 my-1 rounded-full text-white flex flex-col justify-center items-center bg-keppel">
+                      <span>{contributor?.username[0]?.toUpperCase()}</span>
+                    </span>
+                    <span>{contributor?.username}</span>
+                  </div>
+                  <div className="flex justify-center items-center space-x-1">
+                    <svg
+                      className="w-4 h-4 text-red-600"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="red"
+                      viewBox="0 0 21 19"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M11 4C5.5-1.5-1.5 5.5 4 11l7 7 7-7c5.458-5.458-1.542-12.458-7-7Z"
+                      />
+                    </svg>
+                    <span>{contributor?.likesReceived}</span>
+                  </div>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
