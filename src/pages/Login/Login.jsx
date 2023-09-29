@@ -12,6 +12,7 @@ const Login = () => {
   const [mode, setMode] = useState("Login");
   const [message, setMessage] = useState();
 
+  // send login payload to the backend
   const login = () => {
     api
       .post("/auth/v1/login", {
@@ -40,6 +41,7 @@ const Login = () => {
       });
   };
 
+  // send signup payload to the backend
   const signup = () => {
     api
       .post("/auth/v1/signup", {
@@ -64,11 +66,13 @@ const Login = () => {
       });
   };
 
-  useEffect(() => {
-    console.log(payload);
-    console.log();
-  }, [payload]);
+  // for debugging
+  // useEffect(() => {
+  //   console.log(payload);
+  //   console.log();
+  // }, [payload]);
 
+  // switch between signup and login forms
   useEffect(() => {
     if (mode === "Login") {
       setPayload({ email: "", password: "" });

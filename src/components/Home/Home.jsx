@@ -6,17 +6,19 @@ import rehypeSanitize from "rehype-sanitize";
 import { protectedApi } from "../../services/api";
 
 const Home = () => {
-  const [threads, setThreads] = useState([]);
-  const [newThread, setNewThread] = useState({});
-  const [create, setCreate] = useState(false);
-  const [filter, setFilter] = useState("all");
-  const [topContributors, setTopContributors] = useState([]);
+  const [threads, setThreads] = useState([]); // state to store fetched threads
+  const [newThread, setNewThread] = useState({}); // state to store new thread payload
+  const [create, setCreate] = useState(false); // state to toggle thread creation box
+  const [filter, setFilter] = useState("all"); // filter options for displayed threads
+  const [topContributors, setTopContributors] = useState([]); // state to store fetched top contributors
   const navigate = useNavigate();
 
   useEffect(() => {
+    // set new thread payload to empty everytime create state updates
     setNewThread({});
   }, [create]);
 
+  // fetch threads from the backend
   const fetchThreads = () => {
     protectedApi
       .get(`/api/v1/thread?filter=${filter}`)
@@ -30,6 +32,7 @@ const Home = () => {
       });
   };
 
+  // fetch top contributors from the backend
   const fetchTopContributors = () => {
     protectedApi
       .get("/api/v1/users/top")
@@ -44,17 +47,21 @@ const Home = () => {
   };
 
   useEffect(() => {
+    // fetch threads again when filter changes
     fetchThreads();
   }, [filter]);
 
   useEffect(() => {
+    // fetch top contributors when components mounts
     fetchTopContributors();
   }, []);
 
   useEffect(() => {
+    // fetch threads when component mounts
     fetchThreads();
   }, []);
 
+  // send new thread payload to backend
   const createNewThread = () => {
     protectedApi
       .post("/api/v1/thread", {
@@ -70,7 +77,7 @@ const Home = () => {
   };
 
   return (
-    <div>
+    <div id="home-page-container">
       <div className="bg-keppel flex flex-col items-center justify-center p-16 space-y-9">
         <div className="text-[#FFFEFE] text-6xl font-medium">Hello. 👋</div>
         <div className="text-[#fcfaf7] text-3xl">
@@ -112,6 +119,7 @@ const Home = () => {
         </button>
       </div>
 
+      {/* threads listing area */}
       <div className="w-4/5 mx-auto flex justify-start items-start">
         <table className="w-2/3">
           <thead>
@@ -190,6 +198,8 @@ const Home = () => {
           </tbody>
         </table>
       </div>
+
+      {/* new thread component */}
       {create ? (
         <div className="fixed bottom-0 left-0 right-0 w-4/5 h-3/10 mx-auto bg-[#FFFEFE] shadow-2xl border-t-8 border-keppel">
           <div className="w-4/5 mx-auto my-10">
@@ -214,7 +224,7 @@ const Home = () => {
                   });
                 }}
                 previewOptions={{
-                  rehypePlugins: [[rehypeSanitize]],
+                  rehypePlugins: [[rehypeSanitize]], // add security to the markdown
                 }}
                 // SOME OF THE COMMANDS OTHER THAN LISTED BELOW BREAKING IN DEVELOPMENT BUT RUNNING FINE IN PRODUCTION, HOWEVER WITH THESE COMMANDS SPECIFIED, PRODUCTION IS BREAKING
                 // commands={[
