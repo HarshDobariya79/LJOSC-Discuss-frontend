@@ -5,6 +5,7 @@ import logout from "../../utils/logout";
 import Navbar from "../../components/Navbar/Navbar";
 
 function Dashboard() {
+  // send api request to log last visit
   useEffect(() => {
     protectedApi
       .get("/ping")

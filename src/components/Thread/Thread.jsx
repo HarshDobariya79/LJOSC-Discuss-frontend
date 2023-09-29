@@ -6,16 +6,18 @@ import rehypeSanitize from "rehype-sanitize";
 import { protectedApi } from "../../services/api";
 
 const Thread = () => {
-  const { id } = useParams();
-  const [replyVisible, setReplyVisible] = useState(false);
-  const [newReply, setNewReply] = useState({});
-  const [thread, setThread] = useState();
-  const [message, setMessage] = useState({});
+  const { id } = useParams(); // id of the requested thread
+  const [replyVisible, setReplyVisible] = useState(false); // use state to toggle reply markdown box
+  const [newReply, setNewReply] = useState({}); // new reply payload
+  const [thread, setThread] = useState(); // fetched thread details
+  const [message, setMessage] = useState({}); // error or success message
 
   useEffect(() => {
+    // clear payload eveytime replyVisible is updated
     setNewReply({});
   }, [replyVisible]);
 
+  // clear message after 2 seconds
   useEffect(() => {
     let resetTimer;
     if (message) {
@@ -27,6 +29,7 @@ const Thread = () => {
     return () => clearTimeout(resetTimer);
   }, [message]);
 
+  // fetch thread from the backend
   const fetchThread = () => {
     protectedApi
       .get(`/api/v1/thread/${id}`)
@@ -41,6 +44,7 @@ const Thread = () => {
       });
   };
 
+  // send reply payload to the backend
   const sendReply = () => {
     const { content } = newReply;
     protectedApi
@@ -58,6 +62,7 @@ const Thread = () => {
       });
   };
 
+  // send like or disllike request to the backend
   const likeDislikeThread = () => {
     const { liked } = thread;
     protectedApi
@@ -72,6 +77,7 @@ const Thread = () => {
       });
   };
 
+  // fetch thread on component mount
   useEffect(() => {
     fetchThread();
   }, []);
@@ -159,6 +165,8 @@ const Thread = () => {
                   </div>
                 </div>
               </div>
+
+              {/* reply markdown component */}
               {replyVisible ? (
                 <div className="w-11/12 ml-16 border-b-2">
                   <div data-color-mode="light" className="mx-auto m-5">
@@ -208,6 +216,9 @@ const Thread = () => {
               ) : (
                 ""
               )}
+
+              {/* replies */}
+
               {thread?.replies?.map((reply) => (
                 <div
                   className="flex justify-start items-start my-3 border-b-2 w-full"
